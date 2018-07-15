@@ -140,8 +140,12 @@ defmodule Ueberauth.Strategy.Procore do
 
   defp fetch_user(%Plug.Conn{assigns: %{ueberauth_failure: _fails}} = conn, _), do: conn
   defp fetch_user(conn, token) do
-    first_company = conn.private[:procore_companies]
-    case Ueberauth.Strategy.Procore.OAuth.get(token, "/companies/#{first_company.id}/me") do
+    first_company_id =
+      conn.private[:procore_companies]
+      |> List.first
+      |> Map.get("id")
+
+    case Ueberauth.Strategy.Procore.OAuth.get(token, "/companies/#{first_company_id}/me") do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
       {:ok, %OAuth2.Response{status_code: status_code, body: user}} when status_code in 200..399 ->
