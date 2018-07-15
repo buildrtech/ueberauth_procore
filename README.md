@@ -4,7 +4,7 @@
 
 ## Installation
 
-1. Setup your application at [Procore API](https://api.procore.com).
+1. Setup your application at [Procore Developers](https://developers.procore.com).
 
 1. Add `:ueberauth_procore` to your list of dependencies in `mix.exs`:
 
@@ -31,27 +31,18 @@
       ]
     ```
 
-    You can optionally restrict authentication by providing your team ID. [Find your Procore team ID here](https://api.procore.com/methods/auth.test/test). Note that this is NOT your team's Procore domain name!
-
-    ```elixir
-    config :ueberauth, Ueberauth,
-      providers: [
-        procore: {Ueberauth.Strategy.Procore, [team: "0ABCDEF"]}
-      ]
-    ```
-
 1.  Update your provider configuration:
 
     ```elixir
     config :ueberauth, Ueberauth.Strategy.Procore.OAuth,
-      client_id: System.get_env("SLACK_CLIENT_ID"),
-      client_secret: System.get_env("SLACK_CLIENT_SECRET")
+      client_id: System.get_env("PROCORE_CLIENT_ID"),
+      client_secret: System.get_env("PROCORE_CLIENT_SECRET")
     ```
 
 1.  Include the Überauth plug in your controller:
 
     ```elixir
-    defmodule MyApp.AuthController do
+    defmodule MyApp.SessionController do
       use MyApp.Web, :controller
       plug Ueberauth
       ...
@@ -64,8 +55,8 @@
     scope "/auth", MyApp do
       pipe_through :browser
 
-      get "/:provider", AuthController, :request
-      get "/:provider/callback", AuthController, :callback
+      get "/:provider", SessionController, :request
+      get "/:provider/callback", SessionController, :callback
     end
     ```
 
@@ -79,16 +70,10 @@ Depending on the configured url you can initiate the request through:
 
     /auth/procore
 
-Or with options:
-
-    /auth/procore?scope=users:read
-
-By default the requested scope is "users:read". Scope can be configured either explicitly as a `scope` query value on the request path or in your configuration:
-
 ```elixir
 config :ueberauth, Ueberauth,
   providers: [
-    procore: {Ueberauth.Strategy.Procore, [default_scope: "users:read,users:write"]}
+    procore: {Ueberauth.Strategy.Procore}
   ]
 ```
 
