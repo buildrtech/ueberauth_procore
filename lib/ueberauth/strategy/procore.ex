@@ -4,18 +4,16 @@ defmodule Ueberauth.Strategy.Procore do
 
   When configuring the strategy in the Üeberauth providers, you can specify some defaults.
 
-  * `uid_field` - The field to use as the UID field. This can be any populated field in the info struct. Default `:email`
   * `oauth2_module` - The OAuth2 module to use. Default Ueberauth.Strategy.Procore.OAuth
 
   ````elixir
 
   config :ueberauth, Ueberauth,
     providers: [
-      procore: { Ueberauth.Strategy.Procore, [uid_field: :id] }
+      procore: { Ueberauth.Strategy.Procore }
     ]
   """
-  use Ueberauth.Strategy, uid_field: :id,
-                          oauth2_module: Ueberauth.Strategy.Procore.OAuth
+  use Ueberauth.Strategy, oauth2_module: Ueberauth.Strategy.Procore.OAuth
 
   alias Ueberauth.Auth.Info
   alias Ueberauth.Auth.Credentials
@@ -80,7 +78,7 @@ defmodule Ueberauth.Strategy.Procore do
   # instead, we allow selecting any field from the info struct
   @doc false
   def uid(conn) do
-    Map.get(info(conn), option(conn, :uid_field))
+    conn.private[:procore_user]["id"]
   end
 
   @doc false
@@ -110,7 +108,7 @@ defmodule Ueberauth.Strategy.Procore do
 
   @doc false
   def extra(conn) do
-    user = conn.private[:user]
+    user = conn.private[:procore_user]
 
     %Extra {
       raw_info: %{
