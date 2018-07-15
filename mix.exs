@@ -26,7 +26,7 @@ defmodule UeberauthProcore.Mixfile do
 
   defp deps do
     [
-      {:oauth2, "~> 0.8.0"},
+      {:oauth2, "~> 0.9"},
       {:ueberauth, "~> 0.4"},
 
       # dev/test dependencies
