@@ -13,7 +13,9 @@ defmodule Ueberauth.Strategy.Procore do
       procore: { Ueberauth.Strategy.Procore }
     ]
   """
-  use Ueberauth.Strategy, oauth2_module: Ueberauth.Strategy.Procore.OAuth
+  @oauth2_module Application.fetch_env!(:ueberauth, :procore_oauth2_module)
+
+  use Ueberauth.Strategy, oauth2_module: @oauth2_module
 
   alias Ueberauth.Auth.Info
   alias Ueberauth.Auth.Credentials
@@ -26,9 +28,7 @@ defmodule Ueberauth.Strategy.Procore do
     opts =
       if conn.params["state"], do: Keyword.put(opts, :state, conn.params["state"]), else: opts
 
-    module = option(conn, :oauth2_module)
-
-    redirect!(conn, apply(module, :authorize_url!, [opts]))
+    redirect!(conn, apply(@oauth2_module, :authorize_url!, [opts]))
   end
 
   # When handling the callback, if there was no errors we need to
@@ -37,12 +37,11 @@ defmodule Ueberauth.Strategy.Procore do
   # So that it is available later to build the auth struct, we put it in the private section of the conn.
   @doc false
   def handle_callback!(%Plug.Conn{params: %{"code" => code}} = conn) do
-    module  = option(conn, :oauth2_module)
     params  = [
       code: code,
       redirect_uri: callback_url(conn),
     ]
-    token = apply(module, :get_token!, [params])
+    token = apply(@oauth2_module, :get_token!, [params])
 
     if token.access_token == nil do
       set_errors!(conn, [error(token.other_params["error"], token.other_params["error_description"])])
@@ -151,9 +150,5 @@ defmodule Ueberauth.Strategy.Procore do
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])
     end
-  end
-
-  defp option(conn, key) do
-    Keyword.get(options(conn), key, Keyword.get(default_options(), key))
   end
 end
