@@ -13,7 +13,7 @@ defmodule Ueberauth.Strategy.Procore do
       procore: { Ueberauth.Strategy.Procore }
     ]
   """
-  @oauth2_module Application.fetch_env!(:ueberauth, :procore_oauth2_module)
+  @oauth2_module Ueberauth.Strategy.Procore.OAuth
 
   use Ueberauth.Strategy, oauth2_module: @oauth2_module
 

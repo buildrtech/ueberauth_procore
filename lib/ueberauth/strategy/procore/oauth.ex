@@ -4,9 +4,6 @@ defmodule Ueberauth.Strategy.Procore.OAuth do
 
   @defaults [
     strategy: __MODULE__,
-    site: "https://api.procore.com/vapid",
-    authorize_url: "https://app.procore.com/oauth/authorize",
-    token_url: "https://api.procore.com/oauth/token"
   ]
 
   def client(opts \\ []) do
@@ -15,6 +12,9 @@ defmodule Ueberauth.Strategy.Procore.OAuth do
       |> Application.fetch_env!(Ueberauth.Strategy.Procore.OAuth)
       |> check_config_key_exists(:client_id)
       |> check_config_key_exists(:client_secret)
+      |> check_config_key_exists(:site)
+      |> check_config_key_exists(:authorize_url)
+      |> check_config_key_exists(:token_url)
 
     client_opts =
       @defaults
