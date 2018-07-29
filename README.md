@@ -36,7 +36,8 @@
     ```elixir
     config :ueberauth, Ueberauth.Strategy.Procore.OAuth,
       client_id: System.get_env("PROCORE_CLIENT_ID"),
-      client_secret: System.get_env("PROCORE_CLIENT_SECRET")
+      client_secret: System.get_env("PROCORE_CLIENT_SECRET"),
+      host: System.get_env("PROCORE_HOST")
     ```
 
 1.  Include the Überauth plug in your controller:
