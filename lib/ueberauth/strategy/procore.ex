@@ -25,6 +25,7 @@ defmodule Ueberauth.Strategy.Procore do
   @doc false
   def handle_request!(conn) do
     opts = [redirect_uri: callback_url(conn)]
+
     opts =
       if conn.params["state"], do: Keyword.put(opts, :state, conn.params["state"]), else: opts
 
@@ -37,14 +38,17 @@ defmodule Ueberauth.Strategy.Procore do
   # So that it is available later to build the auth struct, we put it in the private section of the conn.
   @doc false
   def handle_callback!(%Plug.Conn{params: %{"code" => code}} = conn) do
-    params  = [
+    params = [
       code: code,
-      redirect_uri: callback_url(conn),
+      redirect_uri: callback_url(conn)
     ]
+
     token = apply(@oauth2_module, :get_token!, [params])
 
     if token.access_token == nil do
-      set_errors!(conn, [error(token.other_params["error"], token.other_params["error_description"])])
+      set_errors!(conn, [
+        error(token.other_params["error"], token.other_params["error_description"])
+      ])
     else
       conn
       |> store_token(token)
@@ -90,7 +94,7 @@ defmodule Ueberauth.Strategy.Procore do
       expires_at: token.expires_at,
       token_type: token.token_type,
       expires: !!token.expires_at,
-      scopes: [],
+      scopes: []
     }
   end
 
@@ -101,7 +105,7 @@ defmodule Ueberauth.Strategy.Procore do
     %Info{
       email: user["email_address"],
       first_name: user["first_name"],
-      last_name: user["last_name"],
+      last_name: user["last_name"]
     }
   end
 
@@ -109,7 +113,7 @@ defmodule Ueberauth.Strategy.Procore do
   def extra(conn) do
     user = conn.private[:procore_user]
 
-    %Extra {
+    %Extra{
       raw_info: %{
         companies: conn.private[:procore_companies],
         token: conn.private[:procore_token],
@@ -117,7 +121,7 @@ defmodule Ueberauth.Strategy.Procore do
         job_title: user["job_title"],
         is_employee: user["is_employee"],
         business_phone: user["business_phone"],
-        mobile_phone: user["mobile_phone"],
+        mobile_phone: user["mobile_phone"]
       }
     }
   end
@@ -126,27 +130,35 @@ defmodule Ueberauth.Strategy.Procore do
     case Ueberauth.Strategy.Procore.OAuth.get(token, "/companies") do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
-      {:ok, %OAuth2.Response{status_code: status_code, body: companies}} when status_code in 200..399 ->
+
+      {:ok, %OAuth2.Response{status_code: status_code, body: companies}}
+      when status_code in 200..399 ->
         put_private(conn, :procore_companies, companies)
+
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])
+
       {:error, %OAuth2.Response{} = response} ->
         set_errors!(conn, [error("Request Error", response)])
     end
   end
 
   defp fetch_user(%Plug.Conn{assigns: %{ueberauth_failure: _fails}} = conn, _), do: conn
+
   defp fetch_user(conn, token) do
     first_company_id =
       conn.private[:procore_companies]
-      |> List.first
+      |> List.first()
       |> Map.get("id")
 
     case Ueberauth.Strategy.Procore.OAuth.get(token, "/companies/#{first_company_id}/me") do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
-      {:ok, %OAuth2.Response{status_code: status_code, body: user}} when status_code in 200..399 ->
+
+      {:ok, %OAuth2.Response{status_code: status_code, body: user}}
+      when status_code in 200..399 ->
         put_private(conn, :procore_user, user)
+
       {:error, %OAuth2.Error{reason: reason}} ->
         set_errors!(conn, [error("OAuth2", reason)])
     end

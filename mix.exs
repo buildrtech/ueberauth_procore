@@ -10,13 +10,13 @@ defmodule UeberauthProcore.Mixfile do
       name: "Ueberauth Procore",
       package: package(),
       elixir: "~> 1.3",
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       source_url: "https://github.com/buildrtech/ueberauth_procore",
       homepage_url: "https://github.com/buildrtech/ueberauth_procore",
       description: description(),
       deps: deps(),
-      docs: docs(),
+      docs: docs()
     ]
   end
 
@@ -32,7 +32,7 @@ defmodule UeberauthProcore.Mixfile do
       # dev/test dependencies
       {:credo, "~> 0.5", only: [:dev, :test]},
       {:earmark, ">= 0.0.0", only: :dev},
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
 
@@ -45,9 +45,11 @@ defmodule UeberauthProcore.Mixfile do
   end
 
   defp package do
-    [files: ["lib", "mix.exs", "README.md"],
-     maintainers: ["Michael Stock"],
-     licenses: ["MIT"],
-     links: %{"Procore": "https://github.com/buildrtech/ueberauth_procore"}]
+    [
+      files: ["lib", "mix.exs", "README.md"],
+      maintainers: ["Michael Stock"],
+      licenses: ["MIT"],
+      links: %{Procore: "https://github.com/buildrtech/ueberauth_procore"}
+    ]
   end
 end

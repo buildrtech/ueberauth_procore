@@ -60,8 +60,9 @@ defmodule Ueberauth.Strategy.Procore.OAuth do
 
   defp check_config_key_exists(config, key) when is_list(config) do
     unless Keyword.has_key?(config, key) do
-      raise "#{inspect (key)} missing from config :ueberauth, Ueberauth.Strategy.Procore"
+      raise "#{inspect(key)} missing from config :ueberauth, Ueberauth.Strategy.Procore"
     end
+
     config
   end
 
