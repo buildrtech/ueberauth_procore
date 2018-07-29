@@ -24,7 +24,7 @@ defmodule Ueberauth.Strategy.Procore.OAuth do
     OAuth2.Client.new(client_opts)
   end
 
-  def get(token, url, params \\ %{}, headers \\ [], opts \\ []) do
+  def get(token, url, _params \\ %{}, headers \\ [], opts \\ []) do
     [token: token]
     |> client
     |> put_header("Authorization", "Bearer #{token.access_token}")
