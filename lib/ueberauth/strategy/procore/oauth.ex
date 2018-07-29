@@ -4,6 +4,8 @@ defmodule Ueberauth.Strategy.Procore.OAuth do
 
   @defaults [
     strategy: __MODULE__,
+    authorize_url: "/oauth/authorize",
+    token_url: "/oauth/token"
   ]
 
   def client(opts \\ []) do
@@ -13,8 +15,6 @@ defmodule Ueberauth.Strategy.Procore.OAuth do
       |> check_config_key_exists(:client_id)
       |> check_config_key_exists(:client_secret)
       |> check_config_key_exists(:site)
-      |> check_config_key_exists(:authorize_url)
-      |> check_config_key_exists(:token_url)
 
     client_opts =
       @defaults
