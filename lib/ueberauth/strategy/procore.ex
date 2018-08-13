@@ -127,7 +127,7 @@ defmodule Ueberauth.Strategy.Procore do
   end
 
   defp fetch_companies(conn, token) do
-    case Ueberauth.Strategy.Procore.OAuth.get(token, "/companies") do
+    case Ueberauth.Strategy.Procore.OAuth.get(token, "/vapid/companies") do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
 
@@ -151,7 +151,7 @@ defmodule Ueberauth.Strategy.Procore do
       |> List.first()
       |> Map.get("id")
 
-    case Ueberauth.Strategy.Procore.OAuth.get(token, "/companies/#{first_company_id}/me") do
+    case Ueberauth.Strategy.Procore.OAuth.get(token, "/vapid/companies/#{first_company_id}/me") do
       {:ok, %OAuth2.Response{status_code: 401, body: _body}} ->
         set_errors!(conn, [error("token", "unauthorized")])
 
